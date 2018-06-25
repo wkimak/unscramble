@@ -2,115 +2,112 @@
 
 <html>
   <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-	  <script>
-
-    window.addEventListener('load', function() {
-      /* ---------- DOM ----------- */
-      const container = document.querySelector('.msg_container');
-      const message = document.querySelector('input');
-      const scramble_btn = document.getElementById('scramble_btn')
-      const unscramble_btn = document.getElementById('unscramble_btn');
+    <script>
+      window.addEventListener('load', function() {
+        /* ---------- DOM ----------- */
+        const container = document.querySelector('.msg_container');
+        const message = document.querySelector('input');
+        const scramble_btn = document.getElementById('scramble_btn')
+        const unscramble_btn = document.getElementById('unscramble_btn');
      
-      /* ------ Scrambler Object ----- */
-      const scrambler = {
-        // function called in scramble() to generate random chars
-        generateRandom: function() {
-          let characters = ['a','b','9','c','1','d','f','2','g','8','h','i','3',
-                            '$','!','j','k','l',']','/<','m','4','n','5','o',
-                            '6','/>','p','q','7','/)','r','s','t','/(','u','v','w','x','y','z',];
+        /* ------ Scrambler Object ----- */
+        const scrambler = {
+          // function called in scramble() to generate random chars
+          generateRandom: function() {
+            let characters = ['a','b','9','c','1','d','f','2','g','8','h','i','3',
+                              '$','!','j','k','l',']','/<','m','4','n','5','o',
+                              '6','/>','p','q','7','/)','r','s','t','/(','u','v','w','x','y','z',];
 
-          return characters[Math.floor(Math.random() * characters.length)];
-        },
+            return characters[Math.floor(Math.random() * characters.length)];
+          },
         
-        styles: function(func) {
-          if(func === 'scramble') {
-            container.innerHTML = '';
-            container.classList.remove('fadeOut', 'reset');
-            scramble_btn.style.boxShadow = 'none';
-            unscramble_btn.style.boxShadow = '2px 1px 4px black';
-          } else if(func === 'unscramble') {
-            scramble_btn.style.boxShadow = '2px 1px 4px black';
-            unscramble_btn.style.boxShadow = 'none';
-            container.classList.add('fadeOut');
-          } else {
-            container.classList.add('reset')
-            container.style.color = 'black';
-          }
-        },
+          styles: function(func) {
+            if(func === 'scramble') {
+              container.innerHTML = '';
+              container.classList.remove('fadeOut', 'reset');
+              scramble_btn.style.boxShadow = 'none';
+              unscramble_btn.style.boxShadow = '2px 1px 4px black';
+            } else if(func === 'unscramble') {
+              scramble_btn.style.boxShadow = '2px 1px 4px black';
+              unscramble_btn.style.boxShadow = 'none';
+              container.classList.add('fadeOut');
+            } else {
+              container.classList.add('reset')
+              container.style.color = 'black';
+            }
+          },
 
-        scramble: function() {
-          this.styles('scramble');
-          let fragment  = document.createDocumentFragment();
-          let array = message.value.split('');
-          this.unscrambleCalled = false;
+          scramble: function() {
+            this.styles('scramble');
+            let fragment  = document.createDocumentFragment();
+            let array = message.value.split('');
+            this.unscrambleCalled = false;
 
-          // append random chars to in memory fragment
-          for(let x = 0; x < 6650; x++) {
-            let span = document.createElement('span');
-            span.textContent = this.generateRandom();
-            fragment.appendChild(span);
-          }
-          // insert input value into fragment at random positions
-          let pos = 6650/array.length, min = 0, max = pos; 
-          array.forEach((item) => {
-            let span = document.createElement('span');
-            span.setAttribute('hidden', true);
-            span.textContent = item;
-            fragment.insertBefore(span, fragment.children[Math.floor(Math.random() * (max - min)) + Math.floor(min)]);
-            min += pos;
-            max += pos;
-          })
-         // Finally, append fragment to DOM
-          container.appendChild(fragment);   
-          message.value = '';
-        }, 
+            // append random chars to in memory fragment
+            for(let x = 0; x < 6650; x++) {
+              let span = document.createElement('span');
+              span.textContent = this.generateRandom();
+              fragment.appendChild(span);
+            }
+		  
+            // insert input value into fragment at random positions
+            let pos = 6650/array.length, min = 0, max = pos; 
+            array.forEach((item) => {
+              let span = document.createElement('span');
+              span.setAttribute('hidden', true);
+              span.textContent = item;
+              fragment.insertBefore(span, fragment.children[Math.floor(Math.random() * (max - min)) + Math.floor(min)]);
+              min += pos;
+              max += pos;
+            })
+		  
+           // Finally, append fragment to DOM
+            container.appendChild(fragment);   
+            message.value = '';
+          }, 
         
-        // check if unscramble() has been called
-        unscrambleCalled: false,
+          // check if unscramble() has been called
+          unscrambleCalled: false,
 
-        unscramble: function() {
-          if(!this.unscrambleCalled) {
-            this.styles('unscramble');
-            const hidden = document.querySelectorAll('[hidden]');
-            const chars = [];
-            // push hidden chars into chars array
-            setTimeout(() => {
-             hidden.forEach((item) => {
-                item.removeAttribute('hidden');
-                item.className='fadeIn';
-                chars.push(item.innerHTML);
-                message.value = chars.join('');
-             })
-              // fade in all container chars 
+          unscramble: function() {
+            if(!this.unscrambleCalled) {
+              this.styles('unscramble');
+              const hidden = document.querySelectorAll('[hidden]');
+              const chars = [];
+              // push hidden chars into chars array
               setTimeout(() => {
-                this.styles('unscramble_timeout')
-              }, 1000);
-            }, 1000)
+               hidden.forEach((item) => {
+                 item.removeAttribute('hidden');
+                 item.className='fadeIn';
+                 chars.push(item.innerHTML);
+                 message.value = chars.join('');
+               })
+                // fade in all container chars 
+                setTimeout(() => {
+                  this.styles('unscramble_timeout')
+                }, 1000);
+              }, 1000)
 
-            this.unscrambleCalled = true;
+             this.unscrambleCalled = true;
           }
-         
-        
         }
-        
       }
 
     /* --------- Event Handlers --------- */
-        unscramble_btn.addEventListener('click', scrambler.unscramble.bind(scrambler));
-	    	scramble_btn.addEventListener('click', scrambler.scramble.bind(scrambler));
-		});
+       unscramble_btn.addEventListener('click', scrambler.unscramble.bind(scrambler));
+       scramble_btn.addEventListener('click', scrambler.scramble.bind(scrambler));
+});
 
-	  </script>
-	  <style>
+   </script>
+   <style>
       
       * {
         box-sizing: border-box;
       }
 
-	    body {
-		    font-family: monospace;
-		  }
+       body {
+         font-family: monospace;
+       }
 
       input, button {
         border: 2px solid rgb(255, 56, 56);
@@ -118,39 +115,39 @@
         height: 45px;
       } 
 
-		  input {
-		 	  width: 50%;
+      input {
+      	width: 50%;
         margin: 40px auto 30px auto;
-		 	  padding-left: 10px;
+	padding-left: 10px;
         display: block;
-		 }
+      }
 
-		  .msg_container {
-		 	  width: 60%;
+      .msg_container {
+      	width: 60%;
         margin: auto;
         word-break: break-all;
-		  }
+      }
 
-		  .buttons {
+      .buttons {
         text-align: center;
         margin: 20px auto;
         display: block;
-		  }
+      }
 
       button:focus {
         outline: 0;
       }
 
-	     button {
+      button {
         cursor: pointer;
         font-family: monospace;
         color: white;
         font-size: 22px;
-		 	  width: 20%;
+	width: 20%;
         margin: 0 20px;
         background-color: rgb(255, 56, 56);
         box-shadow: 2px 1px 4px black;
-		  }
+      }
 
       @media only screen and (max-width: 700px) {
         button {
@@ -193,9 +190,8 @@
         animation-duration: 3s;
       }
 
-
-	  </style>
-	</head>
+     </style>
+  </head>
 
   <body>
     <input placeholder='Hidden Message' /> 
